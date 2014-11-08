@@ -30,7 +30,7 @@ function init() {
         });
 
     map = createMap();
-//    var checkboxes = createCheckboxes();
+    var checkboxes = createIonCheckboxes();
 
     var trucks = [];
     for (var i = 0; i < TRUCKS_NO; i++) {
@@ -41,6 +41,7 @@ function init() {
     }
     createTruckList(trucks);
     createMapMarkers(map, trucks);
+    deliver_trucks = trucks;
 }
 
 
@@ -153,7 +154,8 @@ function createMap() {
 }
 
 function createCheckboxes() {
-    for (var i=0; i<ranges; i++) {
+    var days = 8;
+    for (var i=0; i<days; i++) {
         $('#checkboxes').append('<input type="checkbox" checked="checked"></input><br />');
     }
 
@@ -171,6 +173,63 @@ function createCheckboxes() {
     });
 
     return $('#checkboxes input').toArray();
+}
+
+function createIonCheckboxes(){
+    for (var i=0; i<ranges.length;i++){
+        console.log(ranges[i]);
+
+        $('#checkboxes').append(' '+
+            '<ion-item class="item">'+
+                '<label class="item item-checkbox">'+
+                    '<div id="in" class="checkbox checkbox-input-hidden disable-pointer-events">'+
+                    '<input  type="checkbox" checked="checked"><i class="checkbox-icon"></i></input><br />'+
+                    '</div>'+
+//                '<span> &nbsp;6.0 - 6.9 </span>'+ //This thingy keeps the value
+            '</div></label></ion-item>'
+        );
+    }
+
+
+
+    $.each($('#checkboxes div'), function(i, checkbox) {
+//        var date = getPreviousDay(i);
+//        console.log('i:',i,'checkbox:',checkbox);
+        $(checkbox)
+            .after('<span> &nbsp;'+ranges[i].min+' - '+ranges[i].max+' </span>')
+            .bind('change', null, function() {
+                if (this.checked) {
+//                    selectDate(date);
+                    filterResults(ranges, deliver_trucks);
+                } else {
+//                    unselectDate(date);
+                    filterResults(ranges, deliver_trucks);
+                }
+            });
+
+//        return $('#checkboxes div').toArray();
+    });
+}
+
+function filterResults(ranges){
+            console.log('before:', deliver_trucks);
+            var rangeListMax = [];
+            var rangeListMin = [];
+            for (var k = 0; k < ranges.length; k++) {
+                if (ranges[k].checked) {
+                    rangeListMax.push(ranges[k].max);
+                    rangeListMin.push(ranges[k].min);
+                }
+            }
+
+            for (k = 0; k < deliver_trucks.length; k++) {
+                if ((deliver_trucks[k].pending_deliveries < Math.min.apply(null, rangeListMin)) ||
+                    (deliver_trucks[k].pending_deliveries > Math.max.apply(null, rangeListMax)))
+                    deliver_trucks[k].visible = false;
+                else
+                    deliver_trucks[k].visible = true;
+            }
+            console.log('after', deliver_trucks);
 }
 
 function createSummary(quakes) {
