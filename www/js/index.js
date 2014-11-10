@@ -15,19 +15,15 @@ var deliver_trucks = [];
 
 function init() {
 
-
-    $.ajax({
-        url: 'http://earthquake.usgs.gov/earthquakes/feed/geojsonp/2.5/week',
-        dataType: 'jsonp',
-        jsonpCallback: 'eqfeed_callback'
-    })
-        .done(
-        function(response, text_status, jq_xhr) {
-//            quakes = parseQuakes(response);
-//            createSummary(quakes);
-//            createMapMarkers(map, quakes);
-//            createTableRows(quakes);
-        });
+//
+//    $.ajax({
+//        url: 'http://earthquake.usgs.gov/earthquakes/feed/geojsonp/2.5/week',
+//        dataType: 'jsonp',
+//        jsonpCallback: 'eqfeed_callback'
+//    })
+//        .done(
+//        function(response, text_status, jq_xhr) {
+//        });
 
     map = createMap();
     var checkboxes = createIonCheckboxes();
@@ -50,7 +46,7 @@ function init() {
 
 var createDeliveries = function(j){
 
-    var ret = {
+    return {
         delivery_id: j,
         recipient: 'The White House',
         //...
@@ -60,7 +56,6 @@ var createDeliveries = function(j){
         item_title: 'item title'+j,
         item_description: 'blahBlahBlah'
     };
-    return ret;
 };
 
 var createRandomTruck = function (i) {
@@ -121,21 +116,6 @@ var ranges = [
 
 
 
-function parseQuakes(response) {
-    var quakes = [];
-
-    $.each(response.features, function(i, feature) {
-        var quake = {};
-        quake.id = feature.id;
-        quake.time = new Date(new Number(feature.properties.time));
-        quake.place = feature.properties.place;
-        quake.latitude = feature.geometry.coordinates[1];
-        quake.longitude = feature.geometry.coordinates[0];
-        quake.magnitude = feature.properties.mag;
-        quakes.push(quake);
-    });
-    return quakes;
-}
 
 function createMap() {
     var div = $('#map_canvas').get(0);
@@ -153,27 +133,6 @@ function createMap() {
     return map;
 }
 
-function createCheckboxes() {
-    var days = 8;
-    for (var i=0; i<days; i++) {
-        $('#checkboxes').append('<input type="checkbox" checked="checked"></input><br />');
-    }
-
-    $.each($('#checkboxes input'), function(i, checkbox) {
-        var date = getPreviousDay(i);
-        $(checkbox)
-            .after('&nbsp;' + moment.utc(date).format('MMM DD'))
-            .bind('change', null, function() {
-                if (this.checked) {
-                    selectDate(date);
-                } else {
-                    unselectDate(date);
-                }
-            });
-    });
-
-    return $('#checkboxes input').toArray();
-}
 
 function createIonCheckboxes(){
     for (var i=0; i<ranges.length;i++){
@@ -190,8 +149,6 @@ function createIonCheckboxes(){
         );
     }
 
-
-
     $.each($('#checkboxes div'), function(i, checkbox) {
 //        var date = getPreviousDay(i);
 //        console.log('i:',i,'checkbox:',checkbox);
@@ -200,10 +157,10 @@ function createIonCheckboxes(){
             .bind('change', null, function() {
                 if (this.checked) {
 //                    selectDate(date);
-                    filterResults(ranges, deliver_trucks);
+                    filterResults(ranges[i].min,ranges[i].max);
                 } else {
 //                    unselectDate(date);
-                    filterResults(ranges, deliver_trucks);
+                    filterResults(ranges[i].min,ranges[i].max);
                 }
             });
 
@@ -211,25 +168,38 @@ function createIonCheckboxes(){
     });
 }
 
-function filterResults(ranges){
-            console.log('before:', deliver_trucks);
-            var rangeListMax = [];
-            var rangeListMin = [];
-            for (var k = 0; k < ranges.length; k++) {
-                if (ranges[k].checked) {
-                    rangeListMax.push(ranges[k].max);
-                    rangeListMin.push(ranges[k].min);
+
+function filterResults(currMin,currMax){
+
+    console.log('currMin',currMin,'currMax',currMax);
+    console.log('before:', deliver_trucks);
+    for (var k = 0; k < ranges.length; k++) {
+        if((ranges[k].min === currMin)&&(ranges[k].max===currMax)){
+            console.log('found range');
+            if(ranges[k].checked){
+                ranges[k].checked = false;
+            }else{
+                ranges[k].checked = true;
+            }
+
+            for (var j = 0; j < deliver_trucks.length; j++) {
+                if ((deliver_trucks[j].pending_deliveries >= ranges[k].min) &&
+                    (deliver_trucks[j].pending_deliveries <= ranges[k].max)) {
+                    deliver_trucks[j].visible = ranges[k].checked;
+                    if(deliver_trucks[j].visible){
+                        deliver_trucks[j].marker.setMap(map);
+                        deliver_trucks[j].iitem.show();
+                    }else{
+                        deliver_trucks[j].marker.setMap(null);
+                        deliver_trucks[j].iitem.hide();
+                    }
                 }
             }
 
-            for (k = 0; k < deliver_trucks.length; k++) {
-                if ((deliver_trucks[k].pending_deliveries < Math.min.apply(null, rangeListMin)) ||
-                    (deliver_trucks[k].pending_deliveries > Math.max.apply(null, rangeListMax)))
-                    deliver_trucks[k].visible = false;
-                else
-                    deliver_trucks[k].visible = true;
-            }
-            console.log('after', deliver_trucks);
+        }
+    }
+//    createTruckList(deliver_trucks);
+
 }
 
 function createSummary(quakes) {
@@ -292,73 +262,29 @@ function createTableRows(quakes) {
 function createTruckList(trucks){
     $.each(trucks, function(i, truck) {
         for(var k =0; k<truck.all_deliveries.length;k++) {
-            var delivery = truck.all_deliveries[k];
-            $('#table_rows').append(
-                    '<ion-item class="item">' +
-                    '<div class="item item-text-wrap">' +
-                    '<div class="row">' +
-                    '<div class="col">' + truck.truck_key + '</div>' +
-                    '<div class="col">' + delivery.delivery_id + '</div>' +
-                    '<div class="col">' + delivery.scheduled_time + '</div>' +
-                    '<div class="col">' + delivery.delivered_time + '</div>' +
-                    '<div class="col">' + delivery.item_title + '</div>' +
-                    '</div>' +
-                    '</div>' +
-                    '</ion-item>'
-            );
+            if (truck.visible) {
+                var delivery = truck.all_deliveries[k];
+                var iitem = $('#table_rows').append(
+                        '<ion-item class="item">' +
+                        '<div class="item item-text-wrap">' +
+                        '<div class="row">' +
+                        '<div class="col">' + truck.truck_key + '</div>' +
+                        '<div class="col">' + delivery.delivery_id + '</div>' +
+                        '<div class="col">' + delivery.scheduled_time + '</div>' +
+                        '<div class="col">' + delivery.delivered_time + '</div>' +
+                        '<div class="col">' + delivery.item_title + '</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '</ion-item>'
+                );
+                truck.iitem = iitem;
+            }
         }
 
     });
 }
 
 
-function selectDate(date) {
-    $.each(quakes, function(i, quake) {
-        if (isSameDay(quake.time, date)) {
-            quake.marker.setMap(map);
-            $(quake.row).show();
-        }
-    });
-
-    var shown_count = 0;
-    $.each(quakes, function(i, quake) {
-        if (quake.marker.getMap() !== null) {
-            shown_count++;
-        }
-    });
-    $('#shown_count').text(shown_count);
-}
-
-function unselectDate(date) {
-    $.each(quakes, function(i, quake) {
-        if (isSameDay(quake.time, date)) {
-            quake.marker.setMap(null);
-            $(quake.row).hide();
-        }
-    });
-
-    var shown_count = 0;
-    $.each(quakes, function(i, quake) {
-        if (quake.marker.getMap() !== null) {
-            shown_count++;
-        }
-    });
-    $('#shown_count').text(shown_count);
-}
-
-function isSameDay(x, y) {
-    return  x.getUTCFullYear()  === y.getUTCFullYear()  &&
-        x.getUTCMonth()     === y.getUTCMonth() &&
-        x.getUTCDate()      === y.getUTCDate();
-}
-
-function getPreviousDay(day) {
-    return new Date(Date.now() - day * ms_per_day);
-}
-
-function getTimeString(time) {
-    return moment.utc(time).format('MMM DD HH:mm:ss');
-}
 
 function getForeColor(magnitude) {
     return  (magnitude < 2.0) ?  colors[0] :
