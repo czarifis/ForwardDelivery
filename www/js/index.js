@@ -41,8 +41,11 @@ function init() {
 }
 
 
-
-
+/**
+ * This function generates a pending delivery
+ * @param j
+ * @returns {{delivery_id: *, recipient: string, scheduled_time: string, delivered_time: string, item_title: string, item_description: string}}
+ */
 
 var createDeliveries = function(j){
 
@@ -58,6 +61,11 @@ var createDeliveries = function(j){
     };
 };
 
+/**
+ * This function generates a single truck with DELIVERY_NO pending deliveries
+ * @param i
+ * @returns {{truck_key: *, coords: {latitude: number, longitude: number}, all_deliveries: Array, pending_deliveries: Number, visible: boolean}}
+ */
 var createRandomTruck = function (i) {
     var lat_min = -90,
         lat_range = 90 - lat_min,
@@ -85,17 +93,18 @@ var createRandomTruck = function (i) {
         all_deliveries: deliveries,
         pending_deliveries : deliveries.length,
         visible:true
-
-
     };
     ret[truck_key] = i;
-
-
     return ret;
 };
 
 
-
+/**
+ * This variable has the ranges that will appear on the UI,
+ * and will be used to incrementally maitain the results based
+ * on what the user selects.
+ * @type {{min: number, max: number, checked: boolean}[]}
+ */
 var ranges = [
     {
         min:0,
@@ -115,7 +124,12 @@ var ranges = [
 ];
 
 
-
+/**
+ * This function generates a map and assignes the value to a global
+ * variable so that it can be used by function responsible for the
+ * incremental rendering of the markers.
+ * @returns {google.maps.Map}
+ */
 
 function createMap() {
     var div = $('#map_canvas').get(0);
@@ -129,15 +143,15 @@ function createMap() {
         panControl: false,
         scaleControl: false
     };
-    var map = new google.maps.Map(div, map_options);
+    map = new google.maps.Map(div, map_options);
     return map;
 }
 
-
+/**
+ * This function generates the checkboxes with the ranges
+ */
 function createIonCheckboxes(){
     for (var i=0; i<ranges.length;i++){
-        console.log(ranges[i]);
-
         $('#checkboxes').append(' '+
             '<ion-item class="item">'+
                 '<label class="item item-checkbox">'+
@@ -150,32 +164,31 @@ function createIonCheckboxes(){
     }
 
     $.each($('#checkboxes div'), function(i, checkbox) {
-//        var date = getPreviousDay(i);
-//        console.log('i:',i,'checkbox:',checkbox);
         $(checkbox)
             .after('<span> &nbsp;'+ranges[i].min+' - '+ranges[i].max+' </span>')
             .bind('change', null, function() {
                 if (this.checked) {
-//                    selectDate(date);
                     filterResults(ranges[i].min,ranges[i].max);
                 } else {
-//                    unselectDate(date);
                     filterResults(ranges[i].min,ranges[i].max);
                 }
             });
-
-//        return $('#checkboxes div').toArray();
     });
 }
 
-
+/**
+ * This function gets called every time the user clicks on a checkbox.
+ * It has to incrementally maintain the results and only show the delivery
+ * trucks and the pending deliveries of each truck both on the map
+ * and on the list bellow the map based on the enabled/disabled checkboxes.
+ *
+ * @param currMin
+ * @param currMax
+ */
 function filterResults(currMin,currMax){
 
-    console.log('currMin',currMin,'currMax',currMax);
-    console.log('before:', deliver_trucks);
     for (var k = 0; k < ranges.length; k++) {
         if((ranges[k].min === currMin)&&(ranges[k].max===currMax)){
-            console.log('found range');
             if(ranges[k].checked){
                 ranges[k].checked = false;
             }else{
@@ -198,15 +211,16 @@ function filterResults(currMin,currMax){
 
         }
     }
-//    createTruckList(deliver_trucks);
 
 }
 
-function createSummary(quakes) {
-    $('#shown_count').text(quakes.length);
-    $('#total_count').text(quakes.length);
-}
-
+/**
+ * This function gets called on init. It generates the markers on the map
+ * and it stores each marker in the model of each truck so that it can
+ * be incrementally maintained in the future.
+ * @param map
+ * @param trucks
+ */
 function createMapMarkers(map, trucks) {
 
     $.each(trucks, function(i, truck) {
@@ -230,34 +244,12 @@ function createMapMarkers(map, trucks) {
     });
 }
 
-function createTableRows(quakes) {
-    $.each(quakes, function(i, quake) {
-        $('#table_rows').append(
-                '<tr id="row-' + quake.id + '">' +
-                '<td>' + quake.magnitude + '</td>' +
-                '<td>' + quake.place + '</td>' +
-                '<td style="white-space: nowrap">' + getTimeString(quake.time) + '</td>' +
-                '<td>' + quake.latitude + '</td>' +
-                '<td>' + quake.longitude + '</td>' +
-                '</tr>'
-        );
-
-        quake.row = $('#row-' + quake.id).get(0);
-    });
-}
-//
-//<ion-item class="item">
-//
-//    <div class="item item-text-wrap">
-//        <div class="row">
-//            <div class="col">truck.truck_key</div>
-//            <div class="col">delivery.delivery_id</div>
-//            <div class="col">delivery.scheduled_time</div>
-//            <div class="col">delivery.delivered_time</div>
-//            <div class="col">delivery.item_title</div>
-//        </div>
-//    </div>
-//</ion-item>
+/**
+ * This function gets called on init. It generates the elements that appear
+ * on the list bellow the map and it stores each div element in the model
+ * of each truck so that it can be incrementally maintained in the future.
+ * @param quakes
+ */
 
 function createTruckList(trucks){
     $.each(trucks, function(i, truck) {
@@ -283,17 +275,4 @@ function createTruckList(trucks){
 
     });
 }
-
-
-
-function getForeColor(magnitude) {
-    return  (magnitude < 2.0) ?  colors[0] :
-        (magnitude < 3.0) ?  colors[1] :
-            (magnitude < 4.0) ?  colors[2] :
-                (magnitude < 5.0) ?  colors[3] :
-                    (magnitude < 6.0) ?  colors[4] :
-                        (magnitude < 7.0) ?  colors[5] :
-                            colors[6];
-}
-
 
