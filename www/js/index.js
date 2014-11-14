@@ -5,6 +5,9 @@
 "use strict";
 var TRUCKS_NO = 100;
 var DELIVERIES_NO = 40;
+var PERCENTAGE = 1;
+
+
 var colors = ['#FEF0D9', '#FDD49E', '#FDBB84', '#FC8D59', '#EF6548', '#D7301F', '#990000'];
 var ms_per_day = 1000 * 60 * 60 * 24;
 var quakes = [];
@@ -35,9 +38,10 @@ function init() {
         trucks.push(mm);
 
     }
-    createTruckList(trucks);
-    createMapMarkers(map, trucks);
     deliver_trucks = trucks;
+    createTruckList();
+    createMapMarkers(map);
+
 }
 
 
@@ -176,6 +180,46 @@ function createIonCheckboxes(){
     });
 }
 
+
+
+//
+//$.each(trucks, function(i, truck) {
+//    for(var k =0; k<truck.all_deliveries.length;k++) {
+//        if (truck.visible) {
+//            var delivery = truck.all_deliveries[k];
+//            var iitem = $('#table_rows').append(
+//                    '<ion-item class="item">' +
+//                    '<div class="item item-text-wrap">' +
+//                    '<div class="row">' +
+//                    '<div class="col">' + truck.truck_key + '</div>' +
+//                    '<div class="col">' + delivery.delivery_id + '</div>' +
+//                    '<div class="col">' + delivery.scheduled_time + '</div>' +
+//                    '<div class="col">' + delivery.delivered_time + '</div>' +
+//                    '<div class="col">' + delivery.item_title + '</div>' +
+//                    '</div>' +
+//                    '</div>' +
+//                    '</ion-item>'
+//            );
+//            truck.iitem = iitem;
+//        }
+//    }
+
+function modifyMarkers(){
+    console.log('modifying markers');
+    for(var k =0; k<TRUCKS_NO*PERCENTAGE;k++) {
+        deliver_trucks[k].coords.latitude = deliver_trucks[k].coords.latitude+5;
+        deliver_trucks[k].coords.longitude = deliver_trucks[k].coords.longitude+5;
+        var coords = $('.coords'+k);
+
+        console.log();
+        coords.replaceWith('<div class="col coords'+k+'">' + deliver_trucks[k].coords.latitude +'<br/>'+deliver_trucks[k].coords.longitude+ '</div>');
+
+        deliver_trucks[k].marker.setPosition(new google.maps.LatLng(deliver_trucks[k].coords.latitude, deliver_trucks[k].coords.longitude));
+//        console.log('coords:',deliver_trucks[k].iitem);
+
+    }
+}
+
 /**
  * This function gets called every time the user clicks on a checkbox.
  * It has to incrementally maintain the results and only show the delivery
@@ -195,16 +239,20 @@ function filterResults(currMin,currMax){
                 ranges[k].checked = true;
             }
 
+
             for (var j = 0; j < deliver_trucks.length; j++) {
                 if ((deliver_trucks[j].pending_deliveries >= ranges[k].min) &&
                     (deliver_trucks[j].pending_deliveries <= ranges[k].max)) {
                     deliver_trucks[j].visible = ranges[k].checked;
+                    var div = $('.item'+j);
+//                    console.log();
                     if(deliver_trucks[j].visible){
                         deliver_trucks[j].marker.setMap(map);
-                        deliver_trucks[j].iitem.show();
+                        div.show();
                     }else{
+
                         deliver_trucks[j].marker.setMap(null);
-                        deliver_trucks[j].iitem.hide();
+                        div.hide();
                     }
                 }
             }
@@ -221,9 +269,9 @@ function filterResults(currMin,currMax){
  * @param map
  * @param trucks
  */
-function createMapMarkers(map, trucks) {
+function createMapMarkers(map) {
 
-    $.each(trucks, function(i, truck) {
+    $.each(deliver_trucks, function(i, truck) {
         truck.marker = new google.maps.Marker({
             map: map,
             position: new google.maps.LatLng(truck.coords.latitude, truck.coords.longitude)
@@ -252,24 +300,27 @@ function createMapMarkers(map, trucks) {
  */
 
 function createTruckList(trucks){
-    $.each(trucks, function(i, truck) {
-        for(var k =0; k<truck.all_deliveries.length;k++) {
-            if (truck.visible) {
-                var delivery = truck.all_deliveries[k];
-                var iitem = $('#table_rows').append(
-                        '<ion-item class="item">' +
-                        '<div class="item item-text-wrap">' +
-                        '<div class="row">' +
-                        '<div class="col">' + truck.truck_key + '</div>' +
-                        '<div class="col">' + delivery.delivery_id + '</div>' +
-                        '<div class="col">' + delivery.scheduled_time + '</div>' +
-                        '<div class="col">' + delivery.delivered_time + '</div>' +
-                        '<div class="col">' + delivery.item_title + '</div>' +
-                        '</div>' +
-                        '</div>' +
-                        '</ion-item>'
-                );
-                truck.iitem = iitem;
+    $.each(deliver_trucks, function(i) {
+        for(var k =0; k<deliver_trucks[i].all_deliveries.length;k++) {
+//            console.log(i);
+            if (deliver_trucks[i].visible) {
+                var delivery = deliver_trucks[i].all_deliveries[k];
+                var iitem = $.parseHTML('<div class="item'+i+'"><ion-item class="item">' +
+                    '<div class="item item-text-wrap">' +
+                    '<div class="row">' +
+                    '<div class="col">' + deliver_trucks[i].truck_key + '</div>' +
+                    '<div class="col coords'+i+'">' + deliver_trucks[i].coords.latitude +'<br/>'+deliver_trucks[i].coords.longitude+ '</div>' +
+                    '<div class="col">' + delivery.delivery_id + '</div>' +
+                    '<div class="col">' + delivery.scheduled_time + '</div>' +
+                    '<div class="col">' + delivery.delivered_time + '</div>' +
+                    '<div class="col">' + delivery.item_title + '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</ion-item></div>');
+                var parent = $('#table_rows').append(iitem);
+
+                deliver_trucks[i].iitem = iitem;
+                deliver_trucks[i].parent = parent;
             }
         }
 
