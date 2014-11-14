@@ -5,8 +5,8 @@
 "use strict";
 var TRUCKS_NO = 100;
 var DELIVERIES_NO = 40;
-var PERCENTAGE = 1;
-
+//var PERCENTAGE = 1;
+var ABOUT_TO_GET_MODIFIED = 25;
 
 var colors = ['#FEF0D9', '#FDD49E', '#FDBB84', '#FC8D59', '#EF6548', '#D7301F', '#990000'];
 var ms_per_day = 1000 * 60 * 60 * 24;
@@ -206,7 +206,9 @@ function createIonCheckboxes(){
 
 function modifyMarkers(){
     console.log('modifying markers');
-    for(var k =0; k<TRUCKS_NO*PERCENTAGE;k++) {
+    console.time("modifyMarkers");
+//    for(var k =0; k<TRUCKS_NO*PERCENTAGE;k++) {
+    for(var k =0; k<ABOUT_TO_GET_MODIFIED;k++) {
         deliver_trucks[k].coords.latitude = deliver_trucks[k].coords.latitude+5;
         deliver_trucks[k].coords.longitude = deliver_trucks[k].coords.longitude+5;
         var coords = $('.coords'+k);
@@ -218,6 +220,7 @@ function modifyMarkers(){
 //        console.log('coords:',deliver_trucks[k].iitem);
 
     }
+    console.timeEnd("modifyMarkers");
 }
 
 /**
