@@ -189,9 +189,15 @@ function modifyMarkers(){
         deliver_trucks[k].coords.latitude = deliver_trucks[k].coords.latitude+5;
         deliver_trucks[k].coords.longitude = deliver_trucks[k].coords.longitude+5;
 
-        for(var j =0; j<deliver_trucks[k].coordsDOM.length;j++) {
+        for(var j =0; j<deliver_trucks[k].coordsjQObj.length;j++) {
 
-            deliver_trucks[k].coordsDOM[j].html('' + deliver_trucks[k].coords.latitude +'<br/>'+deliver_trucks[k].coords.longitude+ '');
+            var myHTML = deliver_trucks[k].coords.latitude +'<br/>'+deliver_trucks[k].coords.longitude;
+//            deliver_trucks[k].coordsjQObj[j].html(myHTML);
+//            deliver_trucks[k].coordsDOM[j].innerHTML = myHTML;
+//            deliver_trucks[k].coordsDOM[j].innerHTML = 'sth';
+            deliver_trucks[k].LatDOM[j].innerHTML = deliver_trucks[k].coords.latitude;
+            deliver_trucks[k].LongDOM[j].innerHTML = deliver_trucks[k].coords.longitude;
+
 
         }
 
@@ -286,6 +292,9 @@ function createTruckList(trucks){
         var litems = [];
 
         var coordsItem = [];
+        var DOMCoordsItem = [];
+        var DOMLongItem = [];
+        var DOMLatItem = [];
         for(var k =0; k<deliver_trucks[i].all_deliveries.length;k++) {
 //            console.log(i);
             if (deliver_trucks[i].visible) { // possible hazzard might need to remove that completely...
@@ -294,7 +303,7 @@ function createTruckList(trucks){
                     '<div class="item item-text-wrap">' +
                     '<div class="row">' +
                     '<div class="col">' + deliver_trucks[i].truck_key + '</div>' +
-                    '<div class="col coords'+i+k+'">' + deliver_trucks[i].coords.latitude +'<br/>'+deliver_trucks[i].coords.longitude+ '</div>' +
+                    '<div class="col coords'+i+k+'"><span class=\'latco'+i+k+'\'>' + deliver_trucks[i].coords.latitude +'</span><br/><span class=\'longco'+i+k+'\'>'+deliver_trucks[i].coords.longitude+ '</span></div>' +
                     '<div class="col">' + delivery.delivery_id + '</div>' +
                     '<div class="col">' + delivery.scheduled_time + '</div>' +
                     '<div class="col">' + delivery.delivered_time + '</div>' +
@@ -305,14 +314,26 @@ function createTruckList(trucks){
                 $('#table_rows').append(iitem);
                 litems.push(iitem);
 
-                var coordVar = iitem.find('.col.coords'+i+k);
+                var coordVar = iitem.find('.col.coords'+i+k)[0];
+                var coordLong = iitem.find('.longco'+i+k)[0];
+
+
+//                console.log(iitem.find('.longco'+i+k));
+                var coordLat = iitem.find('.latco'+i+k)[0];
+                var DOMCoords = coordVar;
                 coordsItem.push(coordVar);
+                DOMCoordsItem.push(DOMCoords);
+                DOMLongItem.push(coordLong);
+                DOMLatItem.push(coordLat);
 //                deliver_trucks[i].iitem = iitem;
 //                deliver_trucks[i].parent = parent;
 
             }
         }
-        deliver_trucks[i].coordsDOM = coordsItem;
+        deliver_trucks[i].coordsjQObj = coordsItem;
+        deliver_trucks[i].coordsDOM = DOMCoordsItem;
+        deliver_trucks[i].LatDOM = DOMLatItem;
+        deliver_trucks[i].LongDOM = DOMLongItem;
 
 
 
