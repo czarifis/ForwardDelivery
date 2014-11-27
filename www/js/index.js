@@ -211,7 +211,46 @@ function modifyMarkers(){
     for(var k =0; k<ABOUT_TO_GET_MODIFIED;k++) {
         deliver_trucks[k].coords.latitude = deliver_trucks[k].coords.latitude+5;
         deliver_trucks[k].coords.longitude = deliver_trucks[k].coords.longitude+5;
-        var coords = $('.coords'+k);
+
+        for(var j =0; j<deliver_trucks[k].coordsDOM.length;j++) {
+//            var delivery = deliver_trucks[k].all_deliveries[j];
+//            if (deliver_trucks[k].visible) { // probably a bug... Oh well...
+                deliver_trucks[k].coordsDOM[j].html('' + deliver_trucks[k].coords.latitude +'<br/>'+deliver_trucks[k].coords.longitude+ '');
+
+//            //////////////////////////////////////////////////////////////////////////////////////////////////
+//            var delivery = deliver_trucks[k].all_deliveries[j];
+//            var iitem = $('<div class="item'+k+'"><ion-item class="item">' +
+//                '<div class="item item-text-wrap">' +
+//                '<div class="row">' +
+//                '<div class="col">' + deliver_trucks[k].truck_key + '</div>' +
+//                '<div class="col coords'+k+j+'">' + deliver_trucks[k].coords.latitude +'<br/>'+deliver_trucks[k].coords.longitude+ '</div>' +
+//                '<div class="col">' + delivery.delivery_id + '</div>' +
+//                '<div class="col">' + delivery.scheduled_time + '</div>' +
+//                '<div class="col">' + delivery.delivered_time + '</div>' +
+//                '<div class="col">' + delivery.item_title + '</div>' +
+//                '</div>' +
+//                '</div>' +
+//                '</ion-item></div>');
+////                $('#table_rows').append(iitem);
+////                console.log(iitem.find('.col.coords'+i+k));
+////                console.log('<div class="col coords'+i+k+'">' + deliver_trucks[i].coords.latitude +'<br/>'+deliver_trucks[i].coords.longitude+ '</div>');
+//            litems.push(iitem);
+//            cloneDOM.append(iitem);
+//
+//            var coordVar = iitem.find('.col.coords'+k+j);
+//            coordsItem.push(coordVar);
+
+
+
+
+//            }
+        }
+
+//        deliver_trucks[k].iitem = litems;
+//        deliver_trucks[i].coordsDOM = coordsItem;
+
+//        bigList.push(litems);
+
 
         console.log();
         coords.replaceWith('<div class="col coords'+k+'">' + deliver_trucks[k].coords.latitude +'<br/>'+deliver_trucks[k].coords.longitude+ '</div>');
@@ -220,6 +259,9 @@ function modifyMarkers(){
 //        console.log('coords:',deliver_trucks[k].iitem);
 
     }
+
+
+
     console.timeEnd("modifyMarkers");
 }
 
@@ -303,7 +345,9 @@ function createMapMarkers(map) {
  */
 
 function createTruckList(trucks){
+
     $.each(deliver_trucks, function(i) {
+        var coordsItem = [];
         for(var k =0; k<deliver_trucks[i].all_deliveries.length;k++) {
 //            console.log(i);
             if (deliver_trucks[i].visible) {
@@ -312,7 +356,7 @@ function createTruckList(trucks){
                     '<div class="item item-text-wrap">' +
                     '<div class="row">' +
                     '<div class="col">' + deliver_trucks[i].truck_key + '</div>' +
-                    '<div class="col coords'+i+'">' + deliver_trucks[i].coords.latitude +'<br/>'+deliver_trucks[i].coords.longitude+ '</div>' +
+                    '<div class="col coords'+i+k+'">' + deliver_trucks[i].coords.latitude +'<br/>'+deliver_trucks[i].coords.longitude+ '</div>' +
                     '<div class="col">' + delivery.delivery_id + '</div>' +
                     '<div class="col">' + delivery.scheduled_time + '</div>' +
                     '<div class="col">' + delivery.delivered_time + '</div>' +
@@ -320,13 +364,32 @@ function createTruckList(trucks){
                     '</div>' +
                     '</div>' +
                     '</ion-item></div>');
-                var parent = $('#table_rows').append(iitem);
+
+                $('#table_rows').append(iitem);
+                console.log(iitem.val());
+//                console.log(iitem.find('.col.coords'+i+k));
+//                console.log('<div class="col coords'+i+k+'">' + deliver_trucks[i].coords.latitude +'<br/>'+deliver_trucks[i].coords.longitude+ '</div>');
+//                litems.push(iitem);
+
+                console.log(iitem.find(''));
+                var coordVar = iitem.find('.col.coords'+i+k);
+                coordsItem.push(coordVar);
+
 
                 deliver_trucks[i].iitem = iitem;
                 deliver_trucks[i].parent = parent;
+                deliver_trucks[i].coordsDOM = coordVar;
             }
         }
 
+
+
+
     });
+
+//    cloneDOM = $('#table_rows').clone();
+//    cloneDOM.empty();
+
+
 }
 
