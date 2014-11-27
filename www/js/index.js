@@ -6,7 +6,7 @@
 var TRUCKS_NO = 100;
 var DELIVERIES_NO = 40;
 //var PERCENTAGE = 1;
-var ABOUT_TO_GET_MODIFIED = 25;
+var ABOUT_TO_GET_MODIFIED = 50;
 
 var colors = ['#FEF0D9', '#FDD49E', '#FDBB84', '#FC8D59', '#EF6548', '#D7301F', '#990000'];
 var ms_per_day = 1000 * 60 * 60 * 24;
@@ -182,82 +182,21 @@ function createIonCheckboxes(){
 
 
 
-//
-//$.each(trucks, function(i, truck) {
-//    for(var k =0; k<truck.all_deliveries.length;k++) {
-//        if (truck.visible) {
-//            var delivery = truck.all_deliveries[k];
-//            var iitem = $('#table_rows').append(
-//                    '<ion-item class="item">' +
-//                    '<div class="item item-text-wrap">' +
-//                    '<div class="row">' +
-//                    '<div class="col">' + truck.truck_key + '</div>' +
-//                    '<div class="col">' + delivery.delivery_id + '</div>' +
-//                    '<div class="col">' + delivery.scheduled_time + '</div>' +
-//                    '<div class="col">' + delivery.delivered_time + '</div>' +
-//                    '<div class="col">' + delivery.item_title + '</div>' +
-//                    '</div>' +
-//                    '</div>' +
-//                    '</ion-item>'
-//            );
-//            truck.iitem = iitem;
-//        }
-//    }
 
 function modifyMarkers(){
     console.time("modifyMarkers");
-//    for(var k =0; k<TRUCKS_NO*PERCENTAGE;k++) {
     for(var k =0; k<ABOUT_TO_GET_MODIFIED;k++) {
         deliver_trucks[k].coords.latitude = deliver_trucks[k].coords.latitude+5;
         deliver_trucks[k].coords.longitude = deliver_trucks[k].coords.longitude+5;
 
         for(var j =0; j<deliver_trucks[k].coordsDOM.length;j++) {
-//            var delivery = deliver_trucks[k].all_deliveries[j];
-//            if (deliver_trucks[k].visible) { // probably a bug... Oh well...
-                deliver_trucks[k].coordsDOM[j].html('' + deliver_trucks[k].coords.latitude +'<br/>'+deliver_trucks[k].coords.longitude+ '');
 
-//            //////////////////////////////////////////////////////////////////////////////////////////////////
-//            var delivery = deliver_trucks[k].all_deliveries[j];
-//            var iitem = $('<div class="item'+k+'"><ion-item class="item">' +
-//                '<div class="item item-text-wrap">' +
-//                '<div class="row">' +
-//                '<div class="col">' + deliver_trucks[k].truck_key + '</div>' +
-//                '<div class="col coords'+k+j+'">' + deliver_trucks[k].coords.latitude +'<br/>'+deliver_trucks[k].coords.longitude+ '</div>' +
-//                '<div class="col">' + delivery.delivery_id + '</div>' +
-//                '<div class="col">' + delivery.scheduled_time + '</div>' +
-//                '<div class="col">' + delivery.delivered_time + '</div>' +
-//                '<div class="col">' + delivery.item_title + '</div>' +
-//                '</div>' +
-//                '</div>' +
-//                '</ion-item></div>');
-////                $('#table_rows').append(iitem);
-////                console.log(iitem.find('.col.coords'+i+k));
-////                console.log('<div class="col coords'+i+k+'">' + deliver_trucks[i].coords.latitude +'<br/>'+deliver_trucks[i].coords.longitude+ '</div>');
-//            litems.push(iitem);
-//            cloneDOM.append(iitem);
-//
-//            var coordVar = iitem.find('.col.coords'+k+j);
-//            coordsItem.push(coordVar);
+            deliver_trucks[k].coordsDOM[j].html('' + deliver_trucks[k].coords.latitude +'<br/>'+deliver_trucks[k].coords.longitude+ '');
 
-
-
-
-//            }
         }
 
-//        deliver_trucks[k].iitem = litems;
-//        deliver_trucks[i].coordsDOM = coordsItem;
-
-//        bigList.push(litems);
-
-
-
         deliver_trucks[k].marker.setPosition(new google.maps.LatLng(deliver_trucks[k].coords.latitude, deliver_trucks[k].coords.longitude));
-//        console.log('coords:',deliver_trucks[k].iitem);
-
     }
-
-
 
     console.timeEnd("modifyMarkers");
 }
@@ -349,7 +288,7 @@ function createTruckList(trucks){
         var coordsItem = [];
         for(var k =0; k<deliver_trucks[i].all_deliveries.length;k++) {
 //            console.log(i);
-            if (deliver_trucks[i].visible) {
+            if (deliver_trucks[i].visible) { // possible hazzard might need to remove that completely...
                 var delivery = deliver_trucks[i].all_deliveries[k];
                 var iitem = $('<div class="item'+i+'"><ion-item class="item">' +
                     '<div class="item item-text-wrap">' +
@@ -364,21 +303,12 @@ function createTruckList(trucks){
                     '</div>' +
                     '</ion-item></div>');
                 $('#table_rows').append(iitem);
-//                console.log(iitem.find('.col.coords'+i+k));
-//                console.log('<div class="col coords'+i+k+'">' + deliver_trucks[i].coords.latitude +'<br/>'+deliver_trucks[i].coords.longitude+ '</div>');
                 litems.push(iitem);
 
                 var coordVar = iitem.find('.col.coords'+i+k);
-//                console.log(coordVar);
                 coordsItem.push(coordVar);
 //                deliver_trucks[i].iitem = iitem;
 //                deliver_trucks[i].parent = parent;
-
-
-
-
-
-
 
             }
         }
