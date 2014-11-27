@@ -205,7 +205,6 @@ function createIonCheckboxes(){
 //    }
 
 function modifyMarkers(){
-    console.log('modifying markers');
     console.time("modifyMarkers");
 //    for(var k =0; k<TRUCKS_NO*PERCENTAGE;k++) {
     for(var k =0; k<ABOUT_TO_GET_MODIFIED;k++) {
@@ -252,8 +251,6 @@ function modifyMarkers(){
 //        bigList.push(litems);
 
 
-        console.log();
-        coords.replaceWith('<div class="col coords'+k+'">' + deliver_trucks[k].coords.latitude +'<br/>'+deliver_trucks[k].coords.longitude+ '</div>');
 
         deliver_trucks[k].marker.setPosition(new google.maps.LatLng(deliver_trucks[k].coords.latitude, deliver_trucks[k].coords.longitude));
 //        console.log('coords:',deliver_trucks[k].iitem);
@@ -347,12 +344,14 @@ function createMapMarkers(map) {
 function createTruckList(trucks){
 
     $.each(deliver_trucks, function(i) {
+        var litems = [];
+
         var coordsItem = [];
         for(var k =0; k<deliver_trucks[i].all_deliveries.length;k++) {
 //            console.log(i);
             if (deliver_trucks[i].visible) {
                 var delivery = deliver_trucks[i].all_deliveries[k];
-                var iitem = $.parseHTML('<div class="item'+i+'"><ion-item class="item">' +
+                var iitem = $('<div class="item'+i+'"><ion-item class="item">' +
                     '<div class="item item-text-wrap">' +
                     '<div class="row">' +
                     '<div class="col">' + deliver_trucks[i].truck_key + '</div>' +
@@ -364,23 +363,26 @@ function createTruckList(trucks){
                     '</div>' +
                     '</div>' +
                     '</ion-item></div>');
-
                 $('#table_rows').append(iitem);
-                console.log(iitem.val());
 //                console.log(iitem.find('.col.coords'+i+k));
 //                console.log('<div class="col coords'+i+k+'">' + deliver_trucks[i].coords.latitude +'<br/>'+deliver_trucks[i].coords.longitude+ '</div>');
-//                litems.push(iitem);
+                litems.push(iitem);
 
-                console.log(iitem.find(''));
                 var coordVar = iitem.find('.col.coords'+i+k);
+//                console.log(coordVar);
                 coordsItem.push(coordVar);
+//                deliver_trucks[i].iitem = iitem;
+//                deliver_trucks[i].parent = parent;
 
 
-                deliver_trucks[i].iitem = iitem;
-                deliver_trucks[i].parent = parent;
-                deliver_trucks[i].coordsDOM = coordVar;
+
+
+
+
+
             }
         }
+        deliver_trucks[i].coordsDOM = coordsItem;
 
 
 
