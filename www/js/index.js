@@ -6,7 +6,7 @@
 var TRUCKS_NO = 100;
 var DELIVERIES_NO = 40;
 //var PERCENTAGE = 1;
-var ABOUT_TO_GET_MODIFIED = 50;
+var ABOUT_TO_GET_MODIFIED = 25;
 
 var colors = ['#FEF0D9', '#FDD49E', '#FDBB84', '#FC8D59', '#EF6548', '#D7301F', '#990000'];
 var ms_per_day = 1000 * 60 * 60 * 24;
@@ -272,10 +272,10 @@ function createMapMarkers(map) {
 //            }
         });
 
-//        google.maps.event.addListener(quake.marker, 'click', function() {
-//            info_window.content = getTimeString(quake.time);
-//            info_window.open(map, quake.marker);
-//        });
+        google.maps.event.addListener(truck.marker, 'click', function() {
+            info_window.content = getTimeString(quake.time);
+            info_window.open(map, truck.marker);
+        });
     });
 }
 
