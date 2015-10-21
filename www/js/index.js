@@ -6,7 +6,7 @@
 var TRUCKS_NO = 100;
 var DELIVERIES_NO = 40;
 //var PERCENTAGE = 1;
-var ABOUT_TO_GET_MODIFIED = 25;
+var ABOUT_TO_GET_MODIFIED = 100;
 
 var colors = ['#FEF0D9', '#FDD49E', '#FDBB84', '#FC8D59', '#EF6548', '#D7301F', '#990000'];
 var ms_per_day = 1000 * 60 * 60 * 24;
@@ -28,7 +28,7 @@ function init() {
 //        function(response, text_status, jq_xhr) {
 //        });
 
-    map = createMap();
+    //map = createMap();
     var checkboxes = createIonCheckboxes();
 
     var trucks = [];
@@ -40,7 +40,7 @@ function init() {
     }
     deliver_trucks = trucks;
     createTruckList();
-    createMapMarkers(map);
+    //createMapMarkers(map);
 
 }
 
@@ -201,7 +201,7 @@ function modifyMarkers(){
 
         }
 
-        deliver_trucks[k].marker.setPosition(new google.maps.LatLng(deliver_trucks[k].coords.latitude, deliver_trucks[k].coords.longitude));
+        //deliver_trucks[k].marker.setPosition(new google.maps.LatLng(deliver_trucks[k].coords.latitude, deliver_trucks[k].coords.longitude));
     }
 
     console.timeEnd("modifyMarkers");
