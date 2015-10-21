@@ -6,7 +6,7 @@
 var TRUCKS_NO = 100;
 var DELIVERIES_NO = 40;
 //var PERCENTAGE = 1;
-var ABOUT_TO_GET_MODIFIED = 25;
+var ABOUT_TO_GET_MODIFIED = 75;
 
 var colors = ['#FEF0D9', '#FDD49E', '#FDBB84', '#FC8D59', '#EF6548', '#D7301F', '#990000'];
 var ms_per_day = 1000 * 60 * 60 * 24;
@@ -39,7 +39,7 @@ function init() {
 
     }
     deliver_trucks = trucks;
-    createTruckList();
+    //createTruckList();
     createMapMarkers(map);
 
 }
@@ -189,17 +189,17 @@ function modifyMarkers(){
         deliver_trucks[k].coords.latitude = deliver_trucks[k].coords.latitude+5;
         deliver_trucks[k].coords.longitude = deliver_trucks[k].coords.longitude+5;
 
-        for(var j =0; j<deliver_trucks[k].coordsjQObj.length;j++) {
-
-            var myHTML = deliver_trucks[k].coords.latitude +'<br/>'+deliver_trucks[k].coords.longitude;
-//            deliver_trucks[k].coordsjQObj[j].html(myHTML);
-//            deliver_trucks[k].coordsDOM[j].innerHTML = myHTML;
-//            deliver_trucks[k].coordsDOM[j].innerHTML = 'sth';
-            deliver_trucks[k].LatDOM[j].innerHTML = deliver_trucks[k].coords.latitude;
-            deliver_trucks[k].LongDOM[j].innerHTML = deliver_trucks[k].coords.longitude;
-
-
-        }
+//        for(var j =0; j<deliver_trucks[k].coordsjQObj.length;j++) {
+//
+//            var myHTML = deliver_trucks[k].coords.latitude +'<br/>'+deliver_trucks[k].coords.longitude;
+////            deliver_trucks[k].coordsjQObj[j].html(myHTML);
+////            deliver_trucks[k].coordsDOM[j].innerHTML = myHTML;
+////            deliver_trucks[k].coordsDOM[j].innerHTML = 'sth';
+//            deliver_trucks[k].LatDOM[j].innerHTML = deliver_trucks[k].coords.latitude;
+//            deliver_trucks[k].LongDOM[j].innerHTML = deliver_trucks[k].coords.longitude;
+//
+//
+//        }
 
         deliver_trucks[k].marker.setPosition(new google.maps.LatLng(deliver_trucks[k].coords.latitude, deliver_trucks[k].coords.longitude));
     }
